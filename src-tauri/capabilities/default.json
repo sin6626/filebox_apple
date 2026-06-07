@@ -2,7 +2,11 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": ["main"],
+  "windows": [
+    "main",
+    "dashboard",
+    "note"
+  ],
   "permissions": [
     "core:default",
     "opener:default",
@@ -12,6 +16,17 @@
     "core:window:allow-is-visible",
     "core:window:allow-show",
     "core:window:allow-hide",
-    "core:window:allow-set-focus"
+    "core:window:allow-set-focus",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-is-maximized",
+    "dialog:default",
+    "fs:default",
+    {
+      "identifier": "fs:allow-write-file",
+      "allow": [
+        { "path": "$VIDEO/**" }
+      ]
+    }
   ]
 }

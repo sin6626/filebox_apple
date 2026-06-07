@@ -1,0 +1,4 @@
+启动方式:
+在根目录下:
+
+ npm run tauri dev   

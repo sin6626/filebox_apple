@@ -20,6 +20,30 @@
         "alwaysOnTop": true,
         "resizable": false,
         "shadow": false
+      },
+      {
+        "label": "dashboard",
+        "title": "FileBox Dashboard",
+        "width": 1000,
+        "height": 700,
+        "decorations": false,
+        "transparent": true,
+        "visible": false,
+        "center": true,
+        "resizable": true,
+        "shadow": true
+      },
+      {
+        "label": "note",
+        "title": "Sticky Note",
+        "width": 280,
+        "height": 280,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "resizable": true,
+        "shadow": false
       }
     ],
     "security": {
