@@ -1,6 +1,10 @@
 use std::env;
 use std::fs;
 use std::path::PathBuf;
+use tauri::{
+    tray::{TrayIconBuilder, MouseButton, TrayIconEvent},
+    Manager, PhysicalPosition, PhysicalSize,
+};
 
 fn get_storage_dir() -> PathBuf {
     let mut path = env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
@@ -125,9 +129,78 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+#[tauri::command]
+fn quit_app(app: tauri::AppHandle) {
+    app.exit(0);
+}
+
+#[tauri::command]
+fn show_dashboard(app: tauri::AppHandle) {
+    if let Some(window) = app.get_webview_window("dashboard") {
+        let _ = window.show();
+        let _ = window.unminimize();
+        let _ = window.set_focus();
+    } else {
+        let _ = tauri::WebviewWindowBuilder::new(
+            &app,
+            "dashboard",
+            tauri::WebviewUrl::App("index.html".into())
+        )
+        .title("FileBox Dashboard")
+        .inner_size(1000.0, 700.0)
+        .decorations(false)
+        .transparent(true)
+        .center()
+        .build();
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            let mut tray_builder = TrayIconBuilder::new()
+                .on_tray_icon_event(|tray, event| {
+                    if let TrayIconEvent::Click { button, position, .. } = event {
+                        let app = tray.app_handle();
+                        if button == MouseButton::Left {
+                            if let Some(window) = app.get_webview_window("dashboard") {
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                        } else if button == MouseButton::Right {
+                            if let Some(menu_window) = app.get_webview_window("tray-menu") {
+                                let size = menu_window.outer_size().unwrap_or(PhysicalSize::new(180, 95));
+                                // Position menu above and to the left of cursor
+                                let x = (position.x - (size.width as f64 / 2.0)).max(0.0);
+                                let y = (position.y - (size.height as f64 + 10.0)).max(0.0);
+                                
+                                let _ = menu_window.set_position(tauri::Position::Physical(PhysicalPosition::new(x as i32, y as i32)));
+                                let _ = menu_window.show();
+                                let _ = menu_window.set_focus();
+                            }
+                        }
+                    }
+                });
+
+            if let Some(icon) = app.default_window_icon().cloned() {
+                tray_builder = tray_builder.icon(icon);
+            }
+
+            tray_builder.build(app)?;
+
+            // 监听托盘菜单窗口失去焦点的事件，自动隐藏窗口
+            if let Some(menu_window) = app.get_webview_window("tray-menu") {
+                let menu_window_clone = menu_window.clone();
+                menu_window.on_window_event(move |event| {
+                    if let tauri::WindowEvent::Focused(false) = event {
+                        let _ = menu_window_clone.hide();
+                    }
+                });
+            }
+
+            Ok(())
+        })
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
@@ -140,7 +213,9 @@ pub fn run() {
             get_storage_dir_path,
             open_file,
             run_app,
-            get_app_icon
+            get_app_icon,
+            quit_app,
+            show_dashboard
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
