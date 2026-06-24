@@ -8,6 +8,12 @@
   - Sticky note window: `src/components/Note.tsx`
 - Native commands live in `src-tauri/src/lib.rs`
 
+## Folder Feature Implementation
+- **Virtual Folders**: Files stay flat under `Storage/`, grouped virtually via `folderId?: string` in metadata.
+- **Storage**: Folders tree structure is saved in `Storage/folders.json` using Rust commands `load_folders` and `save_folders`.
+- **Nesting**: Supported dynamically via `parentId?: string` in `FolderItem`.
+- **Folder deletion**: When a folder is deleted, its files and sub-folders are recursively or iteratively promoted to the deleted folder's parent folder (`folder.parentId`).
+
 ## Current Refactor Focus
 - Reduce the maintenance burden of oversized frontend files without changing product behavior.
 - First priority: split floating launcher state/behavior from rendering.
@@ -22,7 +28,7 @@
 
 ## Hotspots
 - `src/components/AssistiveTouch.tsx`: launcher state, drag/drop, app grid, file import, window control, toast UI.
-- `src/components/Dashboard.tsx`: file library state, event handling, filtering, repeated import flow.
+- `src/components/Dashboard.tsx`: file library state, event handling, filtering, repeated import flow, breadcrumbs, folder rendering, file moving modal.
 
 ## Next Likely Follow-Ups
 - Group Rust commands by storage / shell / icon extraction when native complexity grows.
