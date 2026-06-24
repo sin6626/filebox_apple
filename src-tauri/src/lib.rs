@@ -135,6 +135,32 @@ fn quit_app(app: tauri::AppHandle) {
 }
 
 #[tauri::command]
+fn load_folders() -> Result<String, String> {
+    let storage_dir = get_storage_dir();
+    let folders_path = storage_dir.join("folders.json");
+    
+    if !folders_path.exists() {
+        return Ok("[]".to_string());
+    }
+    
+    match fs::read_to_string(&folders_path) {
+        Ok(data) => Ok(data),
+        Err(e) => Err(format!("Failed to read folders: {}", e)),
+    }
+}
+
+#[tauri::command]
+fn save_folders(data: String) -> Result<(), String> {
+    let storage_dir = get_storage_dir();
+    let folders_path = storage_dir.join("folders.json");
+    
+    match fs::write(&folders_path, data) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(format!("Failed to write folders: {}", e)),
+    }
+}
+
+#[tauri::command]
 fn show_dashboard(app: tauri::AppHandle) {
     if let Some(window) = app.get_webview_window("dashboard") {
         let _ = window.show();
@@ -209,6 +235,8 @@ pub fn run() {
             copy_file_to_storage,
             load_metadata,
             save_metadata,
+            load_folders,
+            save_folders,
             delete_file,
             get_storage_dir_path,
             open_file,

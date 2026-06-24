@@ -44,10 +44,27 @@
         "visible": false,
         "resizable": true,
         "shadow": false
+      },
+      {
+        "label": "tray-menu",
+        "title": "Tray Menu",
+        "width": 180,
+        "height": 95,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "resizable": false,
+        "shadow": false,
+        "skipTaskbar": true
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**"]
+      }
     }
   },
   "bundle": {

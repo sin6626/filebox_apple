@@ -63,6 +63,30 @@ test("getDisplayFiles filters files by the active tab", () => {
   );
 });
 
+test("getDisplayFiles filters by currentFolderId when activeTab is 所有文件", () => {
+  const files = [
+    { ...createFile(1, "image"), folderId: "f1" },
+    { ...createFile(2, "document"), folderId: "f1" },
+    { ...createFile(3, "video"), folderId: "f2" },
+    createFile(4, "other"),
+  ];
+
+  assert.deepEqual(
+    getDisplayFiles(files, "所有文件", "f1").map((file) => file.id),
+    [2, 1],
+  );
+
+  assert.deepEqual(
+    getDisplayFiles(files, "所有文件", "f2").map((file) => file.id),
+    [3],
+  );
+
+  assert.deepEqual(
+    getDisplayFiles(files, "所有文件", undefined).map((file) => file.id),
+    [4],
+  );
+});
+
 test("importSelectedFiles copies every file and returns matching metadata entries", async () => {
   const copied: Array<{ srcPath: string; destFilename: string }> = [];
 

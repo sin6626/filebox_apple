@@ -3,6 +3,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AssistiveTouch } from "./components/AssistiveTouch";
 import { Dashboard } from "./components/Dashboard";
 import { Note } from "./components/Note";
+import { TrayMenu } from "./components/TrayMenu";
 import "./App.css";
 
 function App() {
@@ -20,6 +21,10 @@ function App() {
 
   if (windowLabel === "note") {
     return <Note />;
+  }
+
+  if (windowLabel === "tray-menu") {
+    return <TrayMenu />;
   }
 
   return (

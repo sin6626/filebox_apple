@@ -49,8 +49,20 @@ export const importSelectedFiles = async (
   return items;
 };
 
-export const getDisplayFiles = (files: FileItem[], activeTab: FileLibraryTab): FileItem[] => {
-  const displayFiles = getFilesForActiveTab(files, activeTab).sort((left, right) => right.id - left.id);
+export const getDisplayFiles = (
+  files: FileItem[],
+  activeTab: FileLibraryTab,
+  currentFolderId?: string
+): FileItem[] => {
+  let displayFiles = getFilesForActiveTab(files, activeTab);
+
+  if (activeTab === "所有文件") {
+    displayFiles = displayFiles.filter(
+      (file) => file.folderId === currentFolderId || (!file.folderId && !currentFolderId)
+    );
+  }
+
+  displayFiles = displayFiles.sort((left, right) => right.id - left.id);
 
   if (activeTab === "最近文件") {
     return displayFiles.slice(0, 20);
